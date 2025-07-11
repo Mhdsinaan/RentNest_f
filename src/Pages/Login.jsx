@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../../Api/Api';
 import { toast } from 'sonner';
 
 function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState(null);
-
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -18,7 +15,10 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.email || !form.password) {
+    const email = form.email.trim();
+    const password = form.password;
+
+    if (!email || !password) {
       toast.error('Please fill in both fields.');
       return;
     }
@@ -26,131 +26,114 @@ function Login() {
     try {
       setLoading(true);
 
-      const response = await api.post('/api/Auth/login', {
-        email: form.email.trim(),
-        password: form.password,
-      });
-
-      const { data, message } = response.data;
+      const response = await api.post('/api/Auth/login', { email, password });
+      const { data } = response.data;
 
       const user = {
         token: data.token,
         username: data.username,
         role: data.role,
-        email: form.email.trim(),
+        email,
       };
+
       localStorage.setItem('user', JSON.stringify(user));
-    //   localStorage.setItem('user');  
+      toast.success('Login successful!');
 
-
-      toast.success(message || 'Login successful!');
-      setUserData(user);
-      setIsLoggedIn(true);
-
-      if(user.role=="admin"){
-        navigate('/AdminDashboard'); 
-
-      }else{
-        navigate('/'); 
-
+      switch (data.role) {
+        case 'admin':
+          navigate('/AdminDashboard');
+          break;
+        case 'owner':
+          navigate('/OwnerDashboard');
+          break;
+        default:
+          navigate('/');
       }
 
-      
     } catch (err) {
-      if (err.response?.data?.message) {
-        toast.error(err.response.data.message);
-      } else {
-        toast.error('Login failed: ' + err.message);
-      }
+      console.error('Login error:', err);
+      toast.error(err?.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    setIsLoggedIn(false);
-    setUserData(null);
-    setForm({ email: '', password: '' });
-    toast.info('Logged out successfully.');
-  };
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUserData(JSON.parse(storedUser));
-      setIsLoggedIn(true);
-    }
-  }, []);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-gray-100">
-      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
-         
-          {isLoggedIn ? userData?.username : 'Login'}
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-gray-100 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl flex flex-col md:flex-row overflow-hidden transform transition-all hover:scale-[1.02] duration-300">
 
-        {isLoggedIn && userData ? (
-          <div className="space-y-4 text-center">
-            
-            {/* <p className="text-lg font-semibold text-gray-700">{userData.username}</p> */}
-            <p className="text-sm text-gray-600">Email: {userData.email}</p>
-            <p className="text-sm text-gray-600">Role: {userData.role}</p>
+        {/* Left Side with Image and Text */}
+        <div className=" md:flex  flex-col items-center justify-center bg-indigo  p-10 ">
+  <img
+    src="https://i.pinimg.com/1200x/ec/65/99/ec65999b536945fabdba1b2a7444e098.jpg"
+    alt="Rental"
+    className="w-full h-64 object-cover rounded-lg shadow-md"
+  />
+</div>
 
-            <button
-              onClick={handleLogout}
-              className="mt-4 w-full bg-red-500 text-white py-2 rounded-xl font-semibold hover:bg-red-600 transition"
-            >
-              Logout
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Right Side Form */}
+        <div className="w-full md:w-1/2 p-8">
+          <h2 className="text-3xl font-extrabold text-center text-gray-900 mb-8 tracking-tight">
+            Welcome Back
+          </h2>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                Email
+              </label>
               <input
                 type="email"
                 name="email"
+                id="email"
+                placeholder="Enter your email"
                 value={form.email}
                 onChange={handleChange}
                 required
                 disabled={loading}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-gray-900 placeholder-gray-400"
               />
             </div>
 
+            {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
               <input
                 type="password"
                 name="password"
+                id="password"
+                placeholder="Enter your password"
                 value={form.password}
                 onChange={handleChange}
                 required
                 disabled={loading}
-                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 text-gray-900 placeholder-gray-400"
               />
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 text-white py-2 rounded-xl font-semibold hover:bg-indigo-700 transition"
+              className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'Logging in...' : 'Sign In'}
             </button>
-          </form>
-        )}
 
-        {!isLoggedIn && (
-          <p className="text-sm text-center mt-4 text-gray-600">
-            Don’t have an account?{' '}
-            <Link to="/signup" className="text-indigo-600 font-semibold hover:underline">
-              Register
-            </Link>
-          </p>
-        )}
+            {/* Signup Link */}
+            <div className="text-center">
+              <Link
+                to="/signup"
+                className="inline-block text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors"
+              >
+                Don't have an account? Register
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

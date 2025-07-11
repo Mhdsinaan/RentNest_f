@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 👈 Import this
 import { MapPin } from 'lucide-react';
 
 export default function Home() {
@@ -7,19 +8,22 @@ export default function Home() {
     propertyType: ''
   });
 
+  const navigate = useNavigate(); // 👈 Create navigate instance
+
   const propertyTypes = [
     { value: '', label: 'All Property Types' },
     { value: 'house', label: 'House' },
     { value: 'apartment', label: 'Apartment' },
     { value: 'Resort', label: 'Resort' },
     { value: 'villa', label: 'Villa' },
-   
-    
   ];
 
   const handleSearch = () => {
-    console.log('Search data:', searchData);
+    const queryParams = new URLSearchParams();
+    if (searchData.place) queryParams.append('place', searchData.place);
+    if (searchData.propertyType) queryParams.append('type', searchData.propertyType);
 
+    navigate(`/PropertyList?${queryParams.toString()}`); // 👈 Redirect with params
   };
 
   const handleInputChange = (field, value) => {
@@ -31,25 +35,19 @@ export default function Home() {
 
   return (
     <section
-      className="w-full h-screen bg-cover  bg-center flex flex-col justify-center items-center text-white relative  "
+      className="w-full h-screen bg-cover bg-center flex flex-col justify-center items-center text-white relative"
       style={{
         backgroundImage:
           "url('https://media.istockphoto.com/id/1192403701/photo/residential-housing-background.jpg?s=612x612&w=0&k=20&c=8iquSynRiqeXDRaE53-0aKNEGe8y7RKslG2SoYwYGAQ=')",
       }}
     >
-     
-      <div className="absolute"></div>
-      
-      
       <div className="relative z-10 text-center mb-8">
-  <div className=" bg-opacity-90 p-4 md:p-3 rounded-2xl shadow-lg inline-block">
-    <h1 className="text-3xl md:text-5xl text-black font-bold mb-2">
-      Find Your Dream Property
-    </h1>
-    
-  </div>
-</div>
-
+        <div className="bg-opacity-90 p-4 md:p-3 rounded-2xl shadow-lg inline-block">
+          <h1 className="text-3xl md:text-5xl text-black font-bold mb-2">
+            Find Your Dream Property
+          </h1>
+        </div>
+      </div>
 
       {/* Search Bar */}
       <div className="relative z-10 bg-white rounded-full shadow-2xl p-2 w-full max-w-2xl mx-4">
@@ -60,7 +58,6 @@ export default function Home() {
             <input
               type="text"
               placeholder="Location"
-              add dropdown
               value={searchData.place}
               onChange={(e) => handleInputChange('place', e.target.value)}
               className="w-full outline-none text-gray-900 placeholder-gray-500"

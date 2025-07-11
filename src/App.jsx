@@ -13,16 +13,21 @@ import UpdateRequestStatus from './Admin/UpdateRequestStatus';
 import Footer from './Pages/footer';
 import PropertyDetails from './Pages/propertyDetails';
 import BookingForm from './BookingForm';
+import Profile from './User/Profile';
+import MyBookings from './User/MyBookings';
 
 function Layout() {
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <Outlet />
-      <Footer/>
-    </>
+      <main className="flex-grow">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
   );
 }
+
 
 const router = createBrowserRouter([
   {
@@ -32,6 +37,8 @@ const router = createBrowserRouter([
       { index: true, element: <Home /> },
       {path:'PropertyList',element:<PropertyList/>},
       { path:"PropertyDetails/:id" ,element: <PropertyDetails />} ,
+      {path:'Profile',element:<Profile/>},
+      {path:'MyBookings',element:<MyBookings/>}
       
       
     ],

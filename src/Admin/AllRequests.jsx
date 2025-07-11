@@ -235,9 +235,7 @@ const AllRequests = () => {
                       <button className="text-blue-600 hover:text-blue-900 mr-3">
                         View
                       </button>
-                      <button className="text-indigo-600 hover:text-indigo-900">
-                        Edit
-                      </button>
+                      
                     </td>
                   </tr>
                 ))}
