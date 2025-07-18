@@ -12,7 +12,9 @@ import PropertyList from './Pages/PropertyList';
 import UpdateRequestStatus from './Admin/UpdateRequestStatus';
 import Footer from './Pages/footer';
 import PropertyDetails from './Pages/propertyDetails';
-import BookingForm from './BookingForm';
+import BookingList from './BookingList';
+import RazorpayButton from './razorpay/RazorpayButton';
+
 import Profile from './User/Profile';
 import MyBookings from './User/MyBookings';
 
@@ -38,15 +40,23 @@ const router = createBrowserRouter([
       {path:'PropertyList',element:<PropertyList/>},
       { path:"PropertyDetails/:id" ,element: <PropertyDetails />} ,
       {path:'Profile',element:<Profile/>},
-      {path:'MyBookings',element:<MyBookings/>}
+      {path:'MyBookings',element:<MyBookings/>},
+       {path:'CreateRequest',element:<CreateRequest/>},
+       {path:'RazorpayButton ',element:<RazorpayButton />},
+         {path:"/booking/:id",element:<BookingList/>},
+
+  
+      
+    
       
       
     ],
   },
   { path: 'signup', element: <Registration /> },
   {path:'Login',element:<Login/>},
-  {path:'CreateRequest',element:<CreateRequest/>},
-  {path:"/booking/:id",element:<BookingForm/>},
+ 
+    
+  
   
   
  

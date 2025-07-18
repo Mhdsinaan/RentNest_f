@@ -6,18 +6,21 @@ import './index.css';
 import App from './App.jsx';
 import './index.css';
 import { UserProvider } from './Context/UserContext.jsx';
+// import ChatBox from './User/ChatBox.jsx';
+
 
 
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-     
+    
     <DataProvider>
        < UserProvider>
       <App />
       </UserProvider>
     </DataProvider>
+   
    
   </StrictMode>
 );

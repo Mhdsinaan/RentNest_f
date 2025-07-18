@@ -41,7 +41,7 @@ const PropertyDetails = () => {
   }, [id]);
 
   const handleBooking = () => {
-    // TODO: Call booking/payment API here
+    
     console.log({
       propertyId: id,
       property: property.name,

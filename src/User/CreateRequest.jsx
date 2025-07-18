@@ -72,7 +72,7 @@ const CreateRequest = () => {
     }
   };
 
-  const categories = ["Apartment", "Villa", "House", "Studio", "Commercial"];
+  const categories = ["Apartment", "Villa", "House", "Resort"];
   const locations = ["Areekode", "Kakkadampoyil", "Wayanad", "Kozhikkode", "Malappuram"];
 
   return (

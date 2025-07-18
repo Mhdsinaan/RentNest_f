@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Menu, X, Home, Building, User, Mail } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Menu, X, Home, Building, User, Mail, ChevronDown } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false); // State for both mobile and desktop user dropdown
   const [hideNav, setHideNav] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const user = JSON.parse(localStorage.getItem('user'));
+  const userMenuRef = useRef(null); // Ref to detect outside clicks for desktop dropdown
 
   const navLinks = [
     { name: 'Home', to: '/', icon: Home },
@@ -34,6 +36,21 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false);
+      }
+      if (menuOpen && !event.target.closest('.mobile-nav') && !event.target.closest('.mobile-toggle')) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [menuOpen]);
 
   // Check if on home page
   const isHome = location.pathname === '/';
@@ -86,21 +103,57 @@ export default function Navbar() {
               ))}
 
               {user ? (
-                <div className="relative group">
-                  <button className="flex items-center space-x-2 px-4 py-2 rounded-xl hover:text-blue-500 transition">
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    className="flex items-center space-x-2 px-4 py-2 rounded-xl hover:text-blue-500 transition"
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  >
                     <User size={18} />
                     <span>{user.username}</span>
+                    <ChevronDown
+                      size={18}
+                      className={`transition-transform duration-300 ${
+                        userMenuOpen ? 'rotate-180' : ''
+                      }`}
+                    />
                   </button>
-                  <div className="absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-lg hidden group-hover:block z-50 text-sm text-gray-800">
-                    <Link to="/MyBookings" className="block px-4 py-2 hover:bg-gray-100">My Bookings</Link>
-                    <Link to="/Profile" className="block px-4 py-2 hover:bg-gray-100">My Details</Link>
-                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 hover:bg-gray-100">
+                  <div
+                    className={`absolute right-0 mt-2 w-48 bg-white shadow-xl rounded-lg text-sm text-gray-800 transition-all duration-300 ${
+                      userMenuOpen
+                        ? 'opacity-100 max-h-60'
+                        : 'opacity-0 max-h-0 overflow-hidden'
+                    }`}
+                  >
+                    <Link
+                      to="/MyBookings"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      My Bookings
+                    </Link>
+                    <Link
+                      to="/Profile"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      My Details
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        handleLogout();
+                      }}
+                      className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                    >
                       Logout
                     </button>
                   </div>
                 </div>
               ) : (
-                <Link to="/Login" className="px-4 py-2 rounded-xl text-red hover:text-blue-400 font-medium">
+                <Link
+                  to="/Login"
+                  className="px-4 py-2 rounded-xl text-red hover:text-blue-400 font-medium"
+                >
                   <User size={18} className="inline-block mr-1" />
                   SignUp
                 </Link>
@@ -109,7 +162,7 @@ export default function Navbar() {
 
             {/* Mobile Toggle */}
             <button
-              className="md:hidden relative p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition"
+              className="md:hidden relative p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition mobile-toggle"
               onClick={() => setMenuOpen(!menuOpen)}
             >
               {menuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -119,7 +172,7 @@ export default function Navbar() {
 
         {/* Mobile Nav */}
         <div
-          className={`md:hidden absolute top-full left-0 w-full transition-all duration-500 ${
+          className={`md:hidden absolute top-full left-0 w-full transition-all duration-500 mobile-nav ${
             menuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
           }`}
         >
@@ -137,15 +190,65 @@ export default function Navbar() {
                 </Link>
               ))}
               {user ? (
-                <>
-                  <Link to="/MyBookings" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setMenuOpen(false)}>My Bookings</Link>
-                  <Link to="/Profile" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setMenuOpen(false)}>My Details</Link>
-                  <button onClick={() => { setMenuOpen(false); handleLogout(); }} className="w-full text-left px-4 py-2 hover:bg-gray-100">
-                    Logout
+                <div className="relative" ref={userMenuRef}>
+                  <button
+                    className="group flex items-center space-x-3 p-4 rounded-xl text-gray-700 hover:text-blue-600 transition font-medium hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 w-full"
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  >
+                    <User size={20} />
+                    <span className="text-lg">{user.username}</span>
+                    <ChevronDown
+                      size={20}
+                      className={`transition-transform duration-300 ${
+                        userMenuOpen ? 'rotate-180' : ''
+                      }`}
+                    />
                   </button>
-                </>
+                  <div
+                    className={`space-y-1 mt-1 transition-all duration-300 ${
+                      userMenuOpen
+                        ? 'opacity-100 max-h-60'
+                        : 'opacity-0 max-h-0 overflow-hidden'
+                    }`}
+                  >
+                    <Link
+                      to="/MyBookings"
+                      className="block px-4 py-2 pl-10 hover:bg-gray-100 text-gray-700 hover:text-blue-600"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setUserMenuOpen(false);
+                      }}
+                    >
+                      My Bookings
+                    </Link>
+                    <Link
+                      to="/Profile"
+                      className="block px-4 py-2 pl-10 hover:bg-gray-100 text-gray-700 hover:text-blue-600"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setUserMenuOpen(false);
+                      }}
+                    >
+                      My Details
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setUserMenuOpen(false);
+                        handleLogout();
+                      }}
+                      className="w-full text-left px-4 py-2 pl-10 hover:bg-gray-100 text-gray-700 hover:text-blue-600"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </div>
               ) : (
-                <Link to="/Login" className="block px-4 py-2 hover:bg-gray-100" onClick={() => setMenuOpen(false)}>
+                <Link
+                  to="/Login"
+                  className="block px-4 py-2 hover:bg-gray-100 text-gray-700 hover:text-blue-600"
+                  onClick={() => setMenuOpen(false)}
+                >
                   SignUp
                 </Link>
               )}
