@@ -7,6 +7,7 @@ import Registration from './Pages/Registration';
 import Login from './Pages/Login';
 import AdminDashboard from './Admin/AdminDashboard';
 import CreateRequest from './User/createRequest';
+
 import AllRequests from './Admin/AllRequests';
 import PropertyList from './Pages/PropertyList';
 import UpdateRequestStatus from './Admin/UpdateRequestStatus';
@@ -48,7 +49,7 @@ const router = createBrowserRouter([
       { path:"PropertyDetails/:id" ,element: <PropertyDetails />} ,
       {path:'Profile',element:<Profile/>},
       {path:'MyBookings',element:<MyBookings/>},
-       {path:'CreateRequest',element:<CreateRequest/>},
+       {path:'CreateRequest',element:<CreateRequest />},
        {path:'RazorpayButton ',element:<RazorpayButton />},
          {path:"/booking/:id",element:<BookingList/>},
          {path:'MyListing',element:<MyListings/>},
