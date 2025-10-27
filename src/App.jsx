@@ -13,7 +13,7 @@ import Footer from './Pages/Footer';
 import PropertyDetails from './Pages/PropertyDetails'; // ✅ Fixed case
 import BookingList from './BookingList';
 import RazorpayButton from './razorpay/RazorpayButton';
-import ChatPage from './Pages/ChatPage'; // ✅ Keep inside /Pages/ if it’s there
+import ChatPage from './ChatPage';
 
 import Profile from './User/Profile';
 import MyBookings from './User/MyBookings';
@@ -21,7 +21,7 @@ import Users from './Admin/Users';
 import Analytics from './Admin/Analytics';
 import MyListings from './User/MyListings';
 import Chat from './User/Chat';
-import CreateRequest from './User/CreateRequest'; // ✅ Added if missing
+import CreateRequest from './User/createRequest';
 
 
 function Layout() {
