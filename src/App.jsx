@@ -21,7 +21,7 @@ import Users from './Admin/Users';
 import Analytics from './Admin/Analytics';
 import MyListings from './User/MyListings';
 import Chat from './User/Chat';
-import CreateRequest from './User/createRequest';
+import CreateRequest from "./User/CreateRequest";
 
 
 function Layout() {
