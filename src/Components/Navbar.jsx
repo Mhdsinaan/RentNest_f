@@ -37,7 +37,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
@@ -132,6 +131,13 @@ export default function Navbar() {
                       My Bookings
                     </Link>
                     <Link
+                      to="/MyListing"
+                      className="block px-4 py-2 hover:bg-gray-100"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      My Listing
+                    </Link>
+                    <Link
                       to="/Profile"
                       className="block px-4 py-2 hover:bg-gray-100"
                       onClick={() => setUserMenuOpen(false)}
@@ -148,6 +154,7 @@ export default function Navbar() {
                       Logout
                     </button>
                   </div>
+                  
                 </div>
               ) : (
                 <Link

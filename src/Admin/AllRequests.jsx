@@ -157,9 +157,9 @@ const AllRequests = () => {
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Date
                   </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
-                  </th>
+                  </th> */}
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -231,12 +231,12 @@ const AllRequests = () => {
                           })
                         : "-"}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    {/* <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button className="text-blue-600 hover:text-blue-900 mr-3">
                         View
                       </button>
                       
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>

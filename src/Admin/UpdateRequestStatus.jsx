@@ -15,7 +15,7 @@ const statusReverseMap = {
 };
 
 const UpdateRequestStatus = () => {
-  const { id } = useParams(); // id is RequestId or UserId depending on your API
+  const { id } = useParams(); 
   const navigate = useNavigate();
 
   const [status, setStatus] = useState("Pending");

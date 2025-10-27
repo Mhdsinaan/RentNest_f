@@ -36,7 +36,10 @@ function Login() {
         email,
       };
 
+      // ✅ Store user and token separately
       localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', data.token); // 👈 Required for SignalR
+
       toast.success('Login successful!');
 
       switch (data.role) {
@@ -63,13 +66,13 @@ function Login() {
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl flex flex-col md:flex-row overflow-hidden transform transition-all hover:scale-[1.02] duration-300">
 
         {/* Left Side with Image and Text */}
-        <div className=" md:flex  flex-col items-center justify-center bg-indigo  p-10 ">
-  <img
-    src="https://i.pinimg.com/1200x/ec/65/99/ec65999b536945fabdba1b2a7444e098.jpg"
-    alt="Rental"
-    className="w-full h-64 object-cover rounded-lg shadow-md"
-  />
-</div>
+        <div className="md:flex flex-col items-center justify-center bg-indigo p-10">
+          <img
+            src="https://i.pinimg.com/1200x/ec/65/99/ec65999b536945fabdba1b2a7444e098.jpg"
+            alt="Rental"
+            className="w-full h-64 object-cover rounded-lg shadow-md"
+          />
+        </div>
 
         {/* Right Side Form */}
         <div className="w-full md:w-1/2 p-8">

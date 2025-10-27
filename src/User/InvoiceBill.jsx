@@ -14,6 +14,8 @@ const InvoiceBill = ({ bookingDetails, onClose, properties }) => {
     }
   }, [bookingDetails]);
 
+  
+
   const handleDownload = () => {
     const printContents = invoiceRef.current.innerHTML;
     const originalContents = document.body.innerHTML;

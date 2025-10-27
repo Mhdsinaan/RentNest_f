@@ -28,10 +28,10 @@ const BookingList = () => {
   const [monthlyRate, setMonthlyRate] = useState(0);
   const [dailyRate, setDailyRate] = useState(0);
   const [razorpayLoaded, setRazorpayLoaded] = useState(false);
-  const [showInvoice, setShowInvoice] = useState(false); // State for invoice visibility
-  const [bookingDetails, setBookingDetails] = useState(null); // State for booking details
+  const [showInvoice, setShowInvoice] = useState(false); 
+  const [bookingDetails, setBookingDetails] = useState(null); 
 
-  const userId = 1; // TODO: Replace with actual user ID from auth context
+  const userId = 1; 
 
   useEffect(() => {
     const loadRazorpayScript = () => {
@@ -279,98 +279,164 @@ const BookingList = () => {
 
   const renderResortCalendar = () => (
     <>
-      <div className="flex justify-between items-center mb-6 mt-20">
+      {/* Calendar Header */}
+      <div className="flex justify-between items-center mb-8 bg-white rounded-xl p-6 shadow-lg border border-gray-100">
         <button
           onClick={() =>
             currentMonth === 0
               ? (setCurrentMonth(11), setCurrentYear(currentYear - 1))
               : setCurrentMonth(currentMonth - 1)
           }
-          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg shadow-md"
+          className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg shadow-md transform transition-all duration-200 hover:scale-105 font-medium"
         >
-          ← Prev
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Previous
         </button>
-        <h2 className="text-2xl font-semibold text-gray-800 mt-10">
+        
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
           {monthNames[currentMonth]} {currentYear}
         </h2>
+        
         <button
           onClick={() =>
             currentMonth === 11
               ? (setCurrentMonth(0), setCurrentYear(currentYear + 1))
               : setCurrentMonth(currentMonth + 1)
           }
-          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg shadow-md "
+          className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg shadow-md transform transition-all duration-200 hover:scale-105 font-medium"
         >
-          Next →
+          Next
+          <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-2 text-center">
-        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-          <div key={day} className="font-semibold text-gray-700">{day}</div>
-        ))}
-        {generateCalendar().map((date, idx) => {
-          if (!date) return <div key={idx}></div>;
-          const booked = isBooked(date);
-          return (
-            <div
-              key={idx}
-              onClick={() => handleDateClick(date)}
-              className={`p-3 rounded-lg text-white font-bold shadow cursor-pointer transition ${
-                booked
-                  ? "bg-yellow-500 cursor-not-allowed"
-                  : "bg-green-500 hover:bg-green-600"
-              }`}
-              title={booked ? "Booked" : "Available"}
-            >
-              {date.getDate()}
+      {/* Calendar Grid */}
+      <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+        <div className="grid grid-cols-7 gap-2 mb-4">
+          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+            <div key={day} className="text-center font-bold text-gray-600 py-3 text-sm uppercase tracking-wider">
+              {day}
             </div>
-          );
-        })}
+          ))}
+        </div>
+        
+        <div className="grid grid-cols-7 gap-2">
+          {generateCalendar().map((date, idx) => {
+            if (!date) return <div key={idx} className="h-12"></div>;
+            const booked = isBooked(date);
+            const isSelected = selectedDate && date.toDateString() === selectedDate.toDateString();
+            
+            return (
+              <div
+                key={idx}
+                onClick={() => handleDateClick(date)}
+                className={`h-12 flex items-center justify-center rounded-lg font-semibold text-sm cursor-pointer transition-all duration-200 transform hover:scale-105 ${
+                  booked
+                    ? "bg-gradient-to-br from-red-400 to-red-500 text-white cursor-not-allowed shadow-md"
+                    : isSelected
+                    ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg scale-105"
+                    : "bg-gradient-to-br from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white shadow-md hover:shadow-lg"
+                }`}
+                title={booked ? "Booked" : "Available"}
+              >
+                {date.getDate()}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
+      {/* Booking Details Panel */}
       {selectedDate && (
-        <div className="mt-6 p-6 bg-white border rounded-xl shadow-lg space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">Confirm Booking</h3>
-          <p>Check-in: <strong>{selectedDate.toDateString()}</strong></p>
-          <p>Amount: <strong>₹{calculateResortAmount()}</strong></p>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Check-out Date:</label>
-            <input
-              type="date"
-              value={checkOutDate}
-              onChange={(e) => setCheckOutDate(e.target.value)}
-              className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2"
-              min={selectedDate.toISOString().split("T")[0]}
-            />
+        <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4">
+            <h3 className="text-xl font-bold text-white flex items-center">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Booking Details
+            </h3>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Adults:</label>
-            <input
-              type="number"
-              min={1}
-              value={adults}
-              onChange={(e) => setAdults(parseInt(e.target.value) || 1)}
-              className="w-20 mt-1 border border-gray-300 rounded-md px-3 py-1"
-            />
+          
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <label className="text-sm font-medium text-gray-600 uppercase tracking-wide">Check-in Date</label>
+                <p className="text-lg font-semibold text-gray-800 mt-1">{selectedDate.toDateString()}</p>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-4">
+                <label className="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Amount</label>
+                <p className="text-2xl font-bold text-green-600 mt-1">₹{calculateResortAmount().toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Check-out Date</label>
+                <input
+                  type="date"
+                  value={checkOutDate}
+                  onChange={(e) => setCheckOutDate(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  min={selectedDate.toISOString().split("T")[0]}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Adults</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min={1}
+                      value={adults}
+                      onChange={(e) => setAdults(parseInt(e.target.value) || 1)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    />
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Children</label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min={0}
+                      value={children}
+                      onChange={(e) => setChildren(parseInt(e.target.value) || 0)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    />
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={handleBookingSubmit}
+              disabled={!razorpayLoaded}
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 flex items-center justify-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              {razorpayLoaded ? "Confirm Booking & Pay" : "Loading Payment Gateway..."}
+            </button>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Children:</label>
-            <input
-              type="number"
-              min={0}
-              value={children}
-              onChange={(e) => setChildren(parseInt(e.target.value) || 0)}
-              className="w-20 mt-1 border border-gray-300 rounded-md px-3 py-1"
-            />
-          </div>
-          <button
-            onClick={handleBookingSubmit}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow-lg"
-            disabled={!razorpayLoaded}
-          >
-            Confirm Booking
-          </button>
         </div>
       )}
     </>
@@ -378,79 +444,182 @@ const BookingList = () => {
 
   const renderNonResortCalendar = () => (
     <>
-      <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800 mt-15">Select Month for Booking</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 text-center">
-        {monthNames.map((monthName, index) => {
-          const isBookedMonth = bookings.some((b) => {
-            const checkIn = new Date(b.checkInDate);
-            const checkOut = new Date(b.checkOutDate);
-            const startOfMonth = new Date(selectedYear, index, 1);
-            const endOfMonth = new Date(selectedYear, index + 1, 0);
-            return checkOut >= startOfMonth && checkIn <= endOfMonth;
-          });
+      <div className="text-center mb-8 mt-10">
+        <h2 className="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+          Monthly Booking
+        </h2>
+        <p className="text-gray-600 text-lg">Select your preferred month for long-term stay</p>
+      </div>
 
-          return (
-            <div
-              key={index}
-              onClick={() => !isBookedMonth && setSelectedMonth(index)}
-              className={`p-5 rounded-lg font-bold cursor-pointer transition shadow ${
-                isBookedMonth
-                  ? "bg-red-500 text-white cursor-not-allowed"
-                  : selectedMonth === index
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
-              }`}
-              title={isBookedMonth ? "Booked" : "Available"}
-            >
-              {monthName}
-            </div>
-          );
-        })}
+      <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {monthNames.map((monthName, index) => {
+            const isBookedMonth = bookings.some((b) => {
+              const checkIn = new Date(b.checkInDate);
+              const checkOut = new Date(b.checkOutDate);
+              const startOfMonth = new Date(selectedYear, index, 1);
+              const endOfMonth = new Date(selectedYear, index + 1, 0);
+              return checkOut >= startOfMonth && checkIn <= endOfMonth;
+            });
+
+            const isSelected = selectedMonth === index;
+
+            return (
+              <div
+                key={index}
+                onClick={() => !isBookedMonth && setSelectedMonth(index)}
+                className={`p-6 rounded-xl font-bold cursor-pointer transition-all duration-200 transform hover:scale-105 text-center ${
+                  isBookedMonth
+                    ? "bg-gradient-to-br from-red-400 to-red-500 text-white cursor-not-allowed shadow-md"
+                    : isSelected
+                    ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg scale-105"
+                    : "bg-gradient-to-br from-gray-100 to-gray-200 hover:from-blue-50 hover:to-blue-100 text-gray-700 hover:text-blue-600 shadow-md hover:shadow-lg border border-gray-200"
+                }`}
+                title={isBookedMonth ? "Booked" : "Available"}
+              >
+                <div className="text-lg font-bold">{monthName}</div>
+                <div className="text-sm opacity-75 mt-1">{selectedYear}</div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {selectedMonth !== null && (
-        <div className="mt-6 p-6 bg-white border rounded-xl shadow-lg space-y-3">
-          <h3 className="text-lg font-semibold">Confirm Monthly Booking</h3>
-          <p>Selected: <strong>{monthNames[selectedMonth]} {selectedYear}</strong></p>
-          <p className="text-green-700 font-bold">Amount: ₹{calculateMonthlyAmount()}</p>
-          <button
-            onClick={handleBookingSubmit}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow"
-            disabled={!razorpayLoaded}
-          >
-            Confirm Booking
-          </button>
+        <div className="mt-8 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden ">
+          <div className="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 ">
+            <h3 className="text-xl font-bold text-white flex items-center ">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Monthly Booking Confirmation
+            </h3>
+          </div>
+          
+          <div className="p-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <label className="text-sm font-medium text-gray-600 uppercase tracking-wide">Selected Month</label>
+                <p className="text-lg font-semibold text-gray-800 mt-1">{monthNames[selectedMonth]} {selectedYear}</p>
+              </div>
+              
+              <div className="bg-gray-50 rounded-lg p-4">
+                <label className="text-sm font-medium text-gray-600 uppercase tracking-wide">Monthly Rate</label>
+                <p className="text-2xl font-bold text-green-600 mt-1">₹{calculateMonthlyAmount().toLocaleString()}</p>
+              </div>
+            </div>
+
+            <button
+              onClick={handleBookingSubmit}
+              disabled={!razorpayLoaded}
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105 flex items-center justify-center"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+              </svg>
+              {razorpayLoaded ? "Confirm Monthly Booking & Pay" : "Loading Payment Gateway..."}
+            </button>
+          </div>
         </div>
       )}
     </>
   );
 
-  if (propertiesLoading || loading) return <p className="text-center text-gray-600">Loading...</p>;
-  if (error) return <p className="text-red-600 text-center">{error}</p>;
-
-  return (
-    <div className="max-w-4xl mx-auto p-4 sm:p-8 bg-gray-50 min-h-screen">
-      {propertyCategory ? (
-        propertyCategory === "resort" ? renderResortCalendar() : renderNonResortCalendar()
-      ) : (
-        <p className="text-center text-gray-600">Property details not available. Please try again.</p>
-      )}
-      <div className="mt-8 flex justify-center gap-6">
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 bg-red-500 rounded-sm" />
-          <span>Booked</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className="w-4 h-4 bg-green-500 rounded-sm" />
-          <span>Available</span>
+  if (propertiesLoading || loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg font-medium">Loading your booking options...</p>
         </div>
       </div>
-      {showInvoice && bookingDetails && (
-        <InvoiceBill
-          bookingDetails={bookingDetails}
-          onClose={() => setShowInvoice(false)}
-        />
-      )}
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center">
+        <div className="bg-white rounded-xl p-8 shadow-lg border border-red-200 max-w-md text-center">
+          <div className="text-red-500 mb-4">
+            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2">Oops! Something went wrong</h3>
+          <p className="text-red-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="max-w-6xl mx-auto p-4 sm:p-8">
+        <div className="pt-8 pb-4">
+          {propertyCategory ? (
+            propertyCategory === "resort" ? renderResortCalendar() : renderNonResortCalendar()
+          ) : (
+            <div className="text-center bg-white rounded-xl p-8 shadow-lg border border-gray-100">
+              <div className="text-gray-400 mb-4">
+                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Property Not Available</h3>
+              <p className="text-gray-600">Property details not available. Please try again later.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Legend */}
+        <div className="mt-8 bg-white rounded-xl p-6 shadow-lg border border-gray-100">
+          <h4 className="text-lg font-semibold text-gray-800 mb-4 text-center">Booking Status Legend</h4>
+          <div className="flex justify-center gap-8 flex-wrap">
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-gradient-to-br from-red-400 to-red-500 rounded-lg shadow-md"></div>
+              <span className="font-medium text-gray-700">Booked</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-gradient-to-br from-green-400 to-green-500 rounded-lg shadow-md"></div>
+              <span className="font-medium text-gray-700">Available</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md"></div>
+              <span className="font-medium text-gray-700">Selected</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Invoice Modal */}
+        {showInvoice && bookingDetails && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 rounded-t-xl">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-bold text-white flex items-center">
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Booking Invoice
+                  </h3>
+                  <button
+                    onClick={() => setShowInvoice(false)}
+                    className="text-white hover:text-gray-200 transition-colors duration-200"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <InvoiceBill
+                bookingDetails={bookingDetails}
+                onClose={() => setShowInvoice(false)}
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

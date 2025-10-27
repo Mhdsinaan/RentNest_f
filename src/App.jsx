@@ -14,9 +14,16 @@ import Footer from './Pages/footer';
 import PropertyDetails from './Pages/propertyDetails';
 import BookingList from './BookingList';
 import RazorpayButton from './razorpay/RazorpayButton';
+import ChatPage from './ChatPage';
 
 import Profile from './User/Profile';
 import MyBookings from './User/MyBookings';
+import Users from './Admin/Users';
+import Analytics from './Admin/Analytics';
+import MyListings from './User/MyListings';
+import Chat from './User/Chat';
+
+
 
 function Layout() {
   return (
@@ -44,6 +51,9 @@ const router = createBrowserRouter([
        {path:'CreateRequest',element:<CreateRequest/>},
        {path:'RazorpayButton ',element:<RazorpayButton />},
          {path:"/booking/:id",element:<BookingList/>},
+         {path:'MyListing',element:<MyListings/>},
+          {path:'/chat',element:<ChatPage />},
+         
 
   
       
@@ -66,6 +76,8 @@ const router = createBrowserRouter([
     
     children:[
       {path:'AllRequests',element:<AllRequests/>},
+      {path:'Users',element:<Users/>},
+      {path:'Analytics',element:<Analytics/>},
       //  { path: "UpdateRequestStatus/:id", element: <UpdateRequestStatus /> }
       
     ]
