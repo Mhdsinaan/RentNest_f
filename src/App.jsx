@@ -6,7 +6,8 @@ import Home from './Components/Home';
 import Registration from './Pages/Registration';
 import Login from './Pages/Login';
 import AdminDashboard from './Admin/AdminDashboard';
-import CreateRequest from './User/createRequest';
+import CreateRequest from './User/CreateRequest';
+
 
 import AllRequests from './Admin/AllRequests';
 import PropertyList from './Pages/PropertyList';
