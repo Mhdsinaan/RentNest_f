@@ -12,7 +12,7 @@ import UpdateRequestStatus from './Admin/UpdateRequestStatus';
 import Footer from './Pages/Footer';
 import PropertyDetails from './Pages/PropertyDetails'; // ✅ Fixed case
 import BookingList from './BookingList';
-import RazorpayButton from './Pages/RazorpayButton'; // ✅ Fixed path and consistent
+import RazorpayButton from './razorpay/RazorpayButton';
 import ChatPage from './Pages/ChatPage'; // ✅ Keep inside /Pages/ if it’s there
 
 import Profile from './User/Profile';
